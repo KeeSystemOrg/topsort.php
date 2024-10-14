@@ -5,33 +5,27 @@ namespace MJS\TopSort\Tests;
 use MJS\TopSort\CircularDependencyException;
 use MJS\TopSort\ElementNotFoundException;
 use MJS\TopSort\GroupedTopSortInterface;
+use MJS\TopSort\Implementations\BaseImplementation;
 use MJS\TopSort\Implementations\GroupedArraySort;
 use MJS\TopSort\Implementations\GroupedStringSort;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers MJS\TopSort\Implementations\GroupedArraySort
- * @covers MJS\TopSort\Implementations\GroupedStringSort
- * @covers MJS\TopSort\Implementations\BaseImplementation
- * @covers MJS\TopSort\CircularDependencyException
- * @covers MJS\TopSort\ElementNotFoundException
- */
+#[CoversClass(GroupedArraySort::class)]
+#[CoversClass(GroupedStringSort::class)]
+#[CoversClass(BaseImplementation::class)]
+#[CoversClass(CircularDependencyException::class)]
+#[CoversClass(ElementNotFoundException::class)]
 class GroupedSortTest extends TestCase
 {
-
-    public function provideImplementations()
+    public static function provideImplementations(): \Generator
     {
-        return array(
-            array(new GroupedArraySort()),
-            array(new GroupedStringSort()),
-        );
+        yield [new GroupedArraySort()];
+        yield [new GroupedStringSort()];
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+    #[DataProvider('provideImplementations')]
     public function testCircular(GroupedTopSortInterface $sorter)
     {
         $this->expectException(CircularDependencyException::class);
@@ -42,11 +36,8 @@ class GroupedSortTest extends TestCase
         $sorter->sort();
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testDisabledCircularException(GroupedTopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(false);
@@ -57,11 +48,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals(array('car1', 'owner1'), $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testNotFound(GroupedTopSortInterface $sorter)
     {
         $this->expectException(ElementNotFoundException::class);
@@ -73,11 +61,8 @@ class GroupedSortTest extends TestCase
         $sorter->sort();
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testNotCircularException(GroupedTopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
@@ -95,11 +80,8 @@ class GroupedSortTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testDependencyOnSame(GroupedTopSortInterface $sorter)
     {
         $sorter->add('car1', 'car', array('brand1'));
@@ -123,11 +105,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals(array('brand1', 'brand2', 'car1', 'car3', 'car2'), $sorter->sort());
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testDependencyOnSameWithActivatedSameTypeGrouping(GroupedTopSortInterface $sorter)
     {
         $sorter->add('car1', 'car', array('brand1'));
@@ -156,11 +135,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals(array('brand1', 'brand2', 'car1', 'car3', 'car2'), $sorter->sort());
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testDependencyOnSameWithActivatedSameTypeGroupingMoreComplex(GroupedTopSortInterface $sorter)
     {
         $sorter->add('car6', 'car');
@@ -213,11 +189,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals(array('brand1', 'brand2', 'car1', 'car2'), $sorter->sort());
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testNotFoundException(GroupedTopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
@@ -235,11 +208,8 @@ class GroupedSortTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementationsSimple2(GroupedTopSortInterface $sorter)
     {
         $sorter->add('car1', 'car', array('brand1'));
@@ -252,11 +222,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementationsGetGroups(GroupedTopSortInterface $sorter)
     {
         $sorter->add('car1', 'car', array('owner1', 'brand1'));
@@ -309,11 +276,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals('car1', $result[$groups[2]->position]);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementationsSimpleDoc(GroupedTopSortInterface $sorter)
     {
         $sorter->add('car1', 'car', ['owner1', 'brand1']);
@@ -328,11 +292,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementationsSimple(GroupedTopSortInterface $sorter)
     {
         $sorter->add('car1', 'car', array('brand1'));
@@ -348,11 +309,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementations(GroupedTopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
@@ -367,11 +325,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementations2(GroupedTopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
@@ -386,11 +341,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementations3(GroupedTopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
@@ -405,11 +357,8 @@ class GroupedSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param GroupedTopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testImplementations4(GroupedTopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {

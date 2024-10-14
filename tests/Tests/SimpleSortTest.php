@@ -5,36 +5,31 @@ namespace MJS\TopSort\Tests;
 use MJS\TopSort\CircularDependencyException;
 use MJS\TopSort\ElementNotFoundException;
 use MJS\TopSort\Implementations\ArraySort;
+use MJS\TopSort\Implementations\BaseImplementation;
 use MJS\TopSort\Implementations\FixedArraySort;
 use MJS\TopSort\Implementations\StringSort;
 use MJS\TopSort\TopSortInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers MJS\TopSort\Implementations\ArraySort
- * @covers MJS\TopSort\Implementations\FixedArraySort
- * @covers MJS\TopSort\Implementations\StringSort
- * @covers MJS\TopSort\Implementations\BaseImplementation
- * @covers MJS\TopSort\CircularDependencyException
- * @covers MJS\TopSort\ElementNotFoundException
- */
+#[CoversClass(ArraySort::class)]
+#[CoversClass(FixedArraySort::class)]
+#[CoversClass(StringSort::class)]
+#[CoversClass(BaseImplementation::class)]
+#[CoversClass(CircularDependencyException::class)]
+#[CoversClass(ElementNotFoundException::class)]
 class SimpleSortTest extends TestCase
 {
-
-    public function provideImplementations()
+    public static function provideImplementations(): \Generator
     {
-        return array(
-            array(new ArraySort()),
-            array(new StringSort()),
-            array(new FixedArraySort())
-        );
+        yield [new ArraySort()];
+        yield [new StringSort()];
+        yield [new FixedArraySort()];
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param TopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testCircular(TopSortInterface $sorter)
     {
         $this->expectException(CircularDependencyException::class);
@@ -44,11 +39,8 @@ class SimpleSortTest extends TestCase
         $sorter->sort();
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param TopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testDisabledCircularException(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(false);
@@ -59,11 +51,8 @@ class SimpleSortTest extends TestCase
         $this->assertEquals(array('owner1', 'car1'), $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param TopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testNotFound(TopSortInterface $sorter)
     {
         $this->expectException(ElementNotFoundException::class);
@@ -75,11 +64,8 @@ class SimpleSortTest extends TestCase
         $sorter->sort();
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param TopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testCircularException(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
@@ -97,11 +83,8 @@ class SimpleSortTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param TopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testCircularExceptionInterceptor(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
@@ -125,11 +108,8 @@ class SimpleSortTest extends TestCase
         $this->assertEquals(array('brand1', 'car1', 'brand2', 'car2'), $sorter->sort());
     }
 
-    /**
-     * @dataProvider provideImplementations
-     *
-     * @param TopSortInterface $sorter
-     */
+
+    #[DataProvider('provideImplementations')]
     public function testNotFoundException(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
@@ -147,9 +127,7 @@ class SimpleSortTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider provideImplementations
-     */
+    #[DataProvider('provideImplementations')]
     public function testImplementationsBlub(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 2; $i++) {
@@ -183,9 +161,7 @@ class SimpleSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     */
+    #[DataProvider('provideImplementations')]
     public function testImplementationsSimpleDoc(TopSortInterface $sorter)
     {
         $sorter->add('car1', array('owner1', 'brand1'));
@@ -202,9 +178,7 @@ class SimpleSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     */
+    #[DataProvider('provideImplementations')]
     public function testImplementationsSimple(TopSortInterface $sorter)
     {
 
@@ -221,9 +195,7 @@ class SimpleSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     */
+    #[DataProvider('provideImplementations')]
     public function testImplementations(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
@@ -249,9 +221,7 @@ class SimpleSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     */
+    #[DataProvider('provideImplementations')]
     public function testImplementations2(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
@@ -277,9 +247,7 @@ class SimpleSortTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @dataProvider provideImplementations
-     */
+    #[DataProvider('provideImplementations')]
     public function testImplementations3(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
